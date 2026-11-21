@@ -6,6 +6,6 @@ window.SITE={
   /* Lien du prévisionnel financier, hébergé ailleurs avec accès restreint (laisser vide tant qu’il n’existe pas) */
   lienFinances:"",
   /* Réunions : exemples fictifs à remplacer. Les fichiers PDF se déposent dans le dossier rapports/ */
-  reunions:[
+  reunions:[{"date":"2026-11-20","titre":"CR Réunion Soreli","lieu":"Lille","odj":"Bail et calendrier","docs":[{"t":"Compte rendu","u":"rapports/CR Compte rendu Soreli.pdf"}]},
      ]
 };
