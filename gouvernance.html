@@ -9,21 +9,21 @@
 :root{
   --bg:#EDF0F3;--panel:#F8F9FB;--ink:#16212E;--muted:#5B6877;--line:#CBD3DC;--field:#fff;
   --proj:#0A86A8;
-  --c-institution:#3B4BA8;--c-entreprise:#D99A00;--c-association:#2A9566;--c-recherche:#9B51B5;--c-citoyen:#D6446B;
+  --c-institution:#3B4BA8;--c-entreprise:#D99A00;--c-association:#2A9566;--c-recherche:#9B51B5;--c-citoyen:#D6446B;--c-financeur:#8A5A2B;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --bg:#12171E;--panel:#1A212A;--ink:#E8EDF2;--muted:#9AA7B5;--line:#2C3744;--field:#121920;
     --proj:#4CC3E6;
-    --c-institution:#8E9BFF;--c-entreprise:#F2BE3A;--c-association:#5CCB98;--c-recherche:#C78BE0;--c-citoyen:#F0829F;
+    --c-institution:#8E9BFF;--c-entreprise:#F2BE3A;--c-association:#5CCB98;--c-recherche:#C78BE0;--c-citoyen:#F0829F;--c-financeur:#D9A066;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#12171E;--panel:#1A212A;--ink:#E8EDF2;--muted:#9AA7B5;--line:#2C3744;--field:#121920;
   --proj:#4CC3E6;
-  --c-institution:#8E9BFF;--c-entreprise:#F2BE3A;--c-association:#5CCB98;--c-recherche:#C78BE0;--c-citoyen:#F0829F;
+  --c-institution:#8E9BFF;--c-entreprise:#F2BE3A;--c-association:#5CCB98;--c-recherche:#C78BE0;--c-citoyen:#F0829F;--c-financeur:#D9A066;
   color-scheme:dark;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
@@ -138,103 +138,36 @@ body:not(.edit) .edit-only{display:none}
 </div>
 
 <script>
-const CATS={institution:"Institution",entreprise:"Entreprise",association:"Association",recherche:"Recherche et formation",citoyen:"Collectif citoyen"};
+const CATS={institution:"Institution",entreprise:"Entreprise",association:"Association",recherche:"Recherche et formation",citoyen:"Collectif citoyen",financeur:"Financeur"};
 const KEY="sociogramme-reseau-v1";
 /* DEBUT-DONNEES */
 const PUBLISHED={
- "updated": "2026-11-21",
- "nodes": [
-  {
-   "id": "n2",
-   "name": "Région",
-   "cat": "institution",
-   "nx": 0.72,
-   "ny": 0.587
-  },
-  {
-   "id": "nmwq9ozjh6ak",
-   "name": "Projet CHB 2",
-   "cat": "citoyen",
-   "nx": 0.348,
-   "ny": 0.236
-  },
-  {
-   "id": "nmwq9p93utzm",
-   "name": "PTCE AFECT",
-   "cat": "association",
-   "nx": 0.618,
-   "ny": 0.826
-  },
-  {
-   "id": "nmwq9pe06s2a",
-   "name": "A Tables Citoyens",
-   "cat": "association",
-   "nx": 0.508,
-   "ny": 0.114
-  },
-  {
-   "id": "nmwq9pggxf7d",
-   "name": "Lilotopia",
-   "cat": "association",
-   "nx": 0.261,
-   "ny": 0.476
-  },
-  {
-   "id": "nmwq9pk43v8d",
-   "name": "Les sens du gout",
-   "cat": "association",
-   "nx": 0.708,
-   "ny": 0.305
-  },
-  {
-   "id": "nmwq9pzdj14g",
-   "name": "CCAS Ville de Lille",
-   "cat": "institution",
-   "nx": 0.451,
-   "ny": 0.855
-  },
-  {
-   "id": "nmwq9q695xw8",
-   "name": "Service Eco et ESS ville de Lille",
-   "cat": "institution",
-   "nx": 0.562,
-   "ny": 0.338
-  },
-  {
-   "id": "nmwq9qnxys02",
-   "name": "Brasserie Fives Cail",
-   "cat": "entreprise",
-   "nx": 0.34,
-   "ny": 0.697
-  },
-  {
-   "id": "nmwq9qq234ta",
-   "name": "La Loco",
-   "cat": "entreprise",
-   "nx": 0.555,
-   "ny": 0.599
-  },
-  {
-   "id": "nmwq9qt0iie3",
-   "name": "Meert",
-   "cat": "entreprise",
-   "nx": 0.43,
-   "ny": 0.467
-  }
+ updated:"2026-11-20",
+ nodes:[
+  {id:"n1",name:"Animation du réseau",cat:"association"},
+  {id:"n2",name:"Région",cat:"institution"},
+  {id:"n3",name:"Métropole",cat:"institution"},
+  {id:"n4",name:"Chambre de commerce",cat:"institution"},
+  {id:"n5",name:"Université",cat:"recherche"},
+  {id:"n6",name:"Coopérative énergie",cat:"entreprise"},
+  {id:"n7",name:"Collectif mobilités",cat:"citoyen"},
+  {id:"n8",name:"Fablab",cat:"association"}
  ],
- "links": [
-  {
-   "id": "lmwqfy62os6a",
-   "a": "nmwq9pe06s2a",
-   "b": "nmwq9ozjh6ak",
-   "type": "proj",
-   "label": "Porteur du projet Fidess"
-  }
- ]
-};
+ links:[
+  {id:"l1",a:"n2",b:"n1",type:"gov",label:"Financeur"},
+  {id:"l2",a:"n1",b:"n2",type:"gov",label:"Siège au comité de pilotage"},
+  {id:"l3",a:"n1",b:"n3",type:"gov",label:"Siège au comité de pilotage"},
+  {id:"l4",a:"n1",b:"n4",type:"gov",label:"Siège au comité de pilotage"},
+  {id:"l5",a:"n1",b:"n5",type:"gov",label:"Conseil scientifique"},
+  {id:"l6",a:"n1",b:"n7",type:"proj",label:"Ateliers mobilités"},
+  {id:"l7",a:"n5",b:"n6",type:"proj",label:"Étude énergie"},
+  {id:"l8",a:"n8",b:"n7",type:"proj",label:"Prototype vélo-cargo"},
+  {id:"l9",a:"n3",b:"n8",type:"proj",label:"Tiers-lieu"},
+  {id:"l10",a:"n6",b:"n4",type:"proj",label:"Club d’entreprises"},
+  {id:"l11",a:"n5",b:"n8",type:"proj",label:"Stages"}
+ ]};
 /* FIN-DONNEES */
-  
-  const EDIT=location.hash==="#edition";
+const EDIT=location.hash==="#edition";
 const EX=PUBLISHED;
 const pinned=()=>!EDIT&&S.nodes.length&&S.nodes.every(n=>typeof n.nx==="number");
 const $=s=>document.querySelector(s);
