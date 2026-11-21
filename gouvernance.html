@@ -142,30 +142,96 @@ const CATS={institution:"Institution",entreprise:"Entreprise",association:"Assoc
 const KEY="sociogramme-reseau-v1";
 /* DEBUT-DONNEES */
 const PUBLISHED={
- updated:"2026-11-20",
- nodes:[
-  {id:"n1",name:"Animation du réseau",cat:"association"},
-  {id:"n2",name:"Région",cat:"institution"},
-  {id:"n3",name:"Métropole",cat:"institution"},
-  {id:"n4",name:"Chambre de commerce",cat:"institution"},
-  {id:"n5",name:"Université",cat:"recherche"},
-  {id:"n6",name:"Coopérative énergie",cat:"entreprise"},
-  {id:"n7",name:"Collectif mobilités",cat:"citoyen"},
-  {id:"n8",name:"Fablab",cat:"association"}
+ "updated": "2026-11-21",
+ "nodes": [
+  {
+   "id": "n2",
+   "name": "Région",
+   "cat": "institution",
+   "nx": 0.719,
+   "ny": 0.581
+  },
+  {
+   "id": "nmwq9ozjh6ak",
+   "name": "Projet CHB 2",
+   "cat": "citoyen",
+   "nx": 0.352,
+   "ny": 0.23
+  },
+  {
+   "id": "nmwq9p93utzm",
+   "name": "PTCE AFECT",
+   "cat": "association",
+   "nx": 0.623,
+   "ny": 0.823
+  },
+  {
+   "id": "nmwq9pe06s2a",
+   "name": "A Tables Citoyens",
+   "cat": "association",
+   "nx": 0.514,
+   "ny": 0.117
+  },
+  {
+   "id": "nmwq9pggxf7d",
+   "name": "Lilotopia",
+   "cat": "association",
+   "nx": 0.262,
+   "ny": 0.471
+  },
+  {
+   "id": "nmwq9pk43v8d",
+   "name": "Les sens du gout",
+   "cat": "association",
+   "nx": 0.706,
+   "ny": 0.302
+  },
+  {
+   "id": "nmwq9pzdj14g",
+   "name": "CCAS Ville de Lille",
+   "cat": "institution",
+   "nx": 0.455,
+   "ny": 0.852
+  },
+  {
+   "id": "nmwq9q695xw8",
+   "name": "Service Eco et ESS ville de Lille",
+   "cat": "institution",
+   "nx": 0.56,
+   "ny": 0.346
+  },
+  {
+   "id": "nmwq9qnxys02",
+   "name": "Brasserie Fives Cail",
+   "cat": "entreprise",
+   "nx": 0.334,
+   "ny": 0.705
+  },
+  {
+   "id": "nmwq9qq234ta",
+   "name": "La Loco",
+   "cat": "entreprise",
+   "nx": 0.55,
+   "ny": 0.602
+  },
+  {
+   "id": "nmwq9qt0iie3",
+   "name": "Meert",
+   "cat": "entreprise",
+   "nx": 0.425,
+   "ny": 0.471
+  }
  ],
- links:[
-  {id:"l1",a:"n2",b:"n1",type:"gov",label:"Financeur"},
-  {id:"l2",a:"n1",b:"n2",type:"gov",label:"Siège au comité de pilotage"},
-  {id:"l3",a:"n1",b:"n3",type:"gov",label:"Siège au comité de pilotage"},
-  {id:"l4",a:"n1",b:"n4",type:"gov",label:"Siège au comité de pilotage"},
-  {id:"l5",a:"n1",b:"n5",type:"gov",label:"Conseil scientifique"},
-  {id:"l6",a:"n1",b:"n7",type:"proj",label:"Ateliers mobilités"},
-  {id:"l7",a:"n5",b:"n6",type:"proj",label:"Étude énergie"},
-  {id:"l8",a:"n8",b:"n7",type:"proj",label:"Prototype vélo-cargo"},
-  {id:"l9",a:"n3",b:"n8",type:"proj",label:"Tiers-lieu"},
-  {id:"l10",a:"n6",b:"n4",type:"proj",label:"Club d’entreprises"},
-  {id:"l11",a:"n5",b:"n8",type:"proj",label:"Stages"}
- ]};
+ "links": [
+  {
+   "id": "lmwqfy62os6a",
+   "a": "nmwq9pe06s2a",
+   "b": "nmwq9ozjh6ak",
+   "type": "proj",
+   "label": "Porteur du projet Fidess"
+  }
+ ]
+};
 /* FIN-DONNEES */
 const EDIT=location.hash==="#edition";
 const EX=PUBLISHED;
