@@ -148,84 +148,93 @@ const PUBLISHED={
    "id": "n2",
    "name": "Région",
    "cat": "institution",
-   "nx": 0.734,
+   "nx": 0.72,
    "ny": 0.587
   },
   {
    "id": "nmwq9ozjh6ak",
    "name": "Projet CHB 2",
    "cat": "citoyen",
-   "nx": 0.344,
-   "ny": 0.268
+   "nx": 0.348,
+   "ny": 0.236
   },
   {
    "id": "nmwq9p93utzm",
    "name": "PTCE AFECT",
    "cat": "association",
-   "nx": 0.591,
-   "ny": 0.85
+   "nx": 0.618,
+   "ny": 0.826
   },
   {
    "id": "nmwq9pe06s2a",
    "name": "A Tables Citoyens",
    "cat": "association",
-   "nx": 0.492,
-   "ny": 0.1
+   "nx": 0.508,
+   "ny": 0.114
   },
   {
    "id": "nmwq9pggxf7d",
    "name": "Lilotopia",
    "cat": "association",
-   "nx": 0.25,
-   "ny": 0.508
+   "nx": 0.261,
+   "ny": 0.476
   },
   {
    "id": "nmwq9pk43v8d",
    "name": "Les sens du gout",
    "cat": "association",
-   "nx": 0.7,
+   "nx": 0.708,
    "ny": 0.305
   },
   {
    "id": "nmwq9pzdj14g",
    "name": "CCAS Ville de Lille",
    "cat": "institution",
-   "nx": 0.417,
-   "ny": 0.852
+   "nx": 0.451,
+   "ny": 0.855
   },
   {
    "id": "nmwq9q695xw8",
    "name": "Service Eco et ESS ville de Lille",
    "cat": "institution",
-   "nx": 0.555,
-   "ny": 0.307
+   "nx": 0.562,
+   "ny": 0.338
   },
   {
    "id": "nmwq9qnxys02",
    "name": "Brasserie Fives Cail",
    "cat": "entreprise",
-   "nx": 0.369,
-   "ny": 0.64
+   "nx": 0.34,
+   "ny": 0.697
   },
   {
    "id": "nmwq9qq234ta",
    "name": "La Loco",
    "cat": "entreprise",
-   "nx": 0.586,
-   "ny": 0.61
+   "nx": 0.555,
+   "ny": 0.599
   },
   {
    "id": "nmwq9qt0iie3",
    "name": "Meert",
    "cat": "entreprise",
-   "nx": 0.464,
-   "ny": 0.474
+   "nx": 0.43,
+   "ny": 0.467
   }
  ],
- "links": []
+ "links": [
+  {
+   "id": "lmwqfy62os6a",
+   "a": "nmwq9pe06s2a",
+   "b": "nmwq9ozjh6ak",
+   "type": "proj",
+   "label": "Porteur du projet Fidess"
+  }
+ ]
 };
 /* FIN-DONNEES */
-const EDIT=location.hash==="#edition";
+  
+  const EDIT=location.hash==="#edition";
 const EX=PUBLISHED;
 const pinned=()=>!EDIT&&S.nodes.length&&S.nodes.every(n=>typeof n.nx==="number");
 const $=s=>document.querySelector(s);
