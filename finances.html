@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prévisionnel financier</title>
+<link rel="stylesheet" href="site.css">
+</head><body>
+<script src="nav.js"></script><script src="donnees.js"></script>
+<div class="wrap">
+  <h1>Prévisionnel financier</h1>
+  <p class="lead">Ce document n’est pas publié sur ce site : il est réservé aux partenaires concernés.</p>
+  <div class="card" style="margin-top:22px">
+    <h3>Accès sur invitation</h3>
+    <p id="txt"></p>
+    <a class="btn" id="lien" href="#" style="display:none" target="_blank" rel="noopener">Ouvrir le prévisionnel</a>
+  </div>
+</div>
+<script>
+const u=window.SITE.lienFinances;
+document.getElementById("txt").textContent=u?"Le lien s’ouvre dans un espace protégé. Si l’accès vous est refusé, demandez une invitation à l’animateur du réseau.":"Le lien n’est pas encore renseigné. Il se configure dans le fichier donnees.js (lienFinances).";
+if(u){const a=document.getElementById("lien");a.href=u;a.style.display="inline-block"}
+</script></body></html>

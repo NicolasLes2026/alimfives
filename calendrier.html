@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calendrier des réunions</title>
+<link rel="stylesheet" href="site.css">
+</head><body>
+<script src="nav.js"></script><script src="donnees.js"></script>
+<div class="wrap">
+  <h1>Calendrier des réunions</h1>
+  <p class="lead">Dates, ordres du jour et documents associés.</p>
+  <h2>À venir</h2><div id="up"></div>
+  <h2>Passées</h2><div id="past"></div>
+
+  <section class="edit-only">
+    <h2>Ajouter une réunion</h2>
+    <div class="two"><div><label for="fd">Date</label><input type="date" id="fd"></div><div><label for="fl">Lieu</label><input id="fl"></div></div>
+    <label for="ft">Titre</label><input id="ft">
+    <label for="fo">Ordre du jour</label><textarea id="fo" rows="2"></textarea>
+    <div class="two"><div><label for="fk">Document joint</label><select id="fk"><option>Compte rendu</option><option>Rapport d’activité</option><option>Autre document</option></select></div>
+    <div><label for="ff">Nom du fichier PDF (facultatif)</label><input id="ff" placeholder="2026-12-10-compte-rendu.pdf"></div></div>
+    <button id="gen">Générer la ligne</button>
+    <label for="out">À coller dans donnees.js, dans la liste « reunions »</label><textarea id="out" rows="4"></textarea>
+    <p class="small">Déposez aussi le PDF dans le dossier rapports/ du dépôt, avec exactement ce nom, et mettez à jour la date « majs.calendrier » dans donnees.js.</p>
+  </section>
+</div>
+<script>
+const S=window.SITE,EDIT=location.hash==="#edition",today=new Date().toISOString().slice(0,10);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function card(r){const d=new Date(r.date+"T12:00:00");
+ return '<article class="card mtg"><div class="date"><b>'+d.getDate()+'</b><span class="small">'+d.toLocaleDateString("fr-FR",{month:"short",year:"numeric"})+'</span></div><div><h3>'+esc(r.titre)+'</h3><div class="small">'+d.toLocaleDateString("fr-FR",{weekday:"long"})+(r.lieu?", "+esc(r.lieu):"")+'</div>'+(r.odj?'<p>'+esc(r.odj)+'</p>':'')+((r.docs||[]).length?'<div class="docs">'+r.docs.map(x=>'<a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.t)+'</a>').join("")+'</div>':'')+'</div></article>'}
+const R=S.reunions.slice(),up=R.filter(r=>r.date>=today).sort((a,b)=>a.date<b.date?-1:1),past=R.filter(r=>r.date<today).sort((a,b)=>a.date<b.date?1:-1);
+$("#up").innerHTML=up.map(card).join("")||'<p class="small">Aucune réunion programmée.</p>';
+$("#past").innerHTML=past.map(card).join("")||'<p class="small">Aucune réunion passée.</p>';
+document.body.classList.toggle("edit",EDIT);
+addEventListener("hashchange",()=>location.reload());
+$("#gen").onclick=()=>{const f=i=>$("#"+i).value.trim();
+ if(!f("fd")||!f("ft")){$("#out").value="Renseignez au moins la date et le titre.";return}
+ const r={date:f("fd"),titre:f("ft"),lieu:f("fl"),odj:f("fo")};
+ if(f("ff"))r.docs=[{t:$("#fk").value,u:"rapports/"+f("ff")}];
+ $("#out").value=JSON.stringify(r)+",";$("#out").select();try{navigator.clipboard.writeText($("#out").value)}catch(e){}};
+</script></body></html>

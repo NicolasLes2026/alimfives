@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Réseau de partenaires</title>
+<link rel="stylesheet" href="site.css">
+</head><body>
+<script src="nav.js"></script><script src="donnees.js"></script>
+<div class="wrap">
+  <h1 id="nom"></h1>
+  <p class="lead">Calendrier, plan des espaces et gouvernance du projet, mis à jour au fil de l’eau.</p>
+  <div id="next"></div>
+  <div class="grid" id="cards"></div>
+</div>
+<script>
+const S=window.SITE,today=new Date().toISOString().slice(0,10);
+const L=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{dateStyle:"long"});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("nom").textContent=S.nom;
+const nx=S.reunions.filter(r=>r.date>=today).sort((a,b)=>a.date<b.date?-1:1)[0];
+document.getElementById("next").innerHTML=nx?'<h2>Prochaine réunion</h2><a class="card" href="calendrier.html"><h3>'+esc(nx.titre)+'</h3><div class="small">'+L(nx.date)+(nx.lieu?", "+esc(nx.lieu):"")+'</div>'+(nx.odj?'<p>'+esc(nx.odj)+'</p>':'')+'</a>':"";
+const C=[["calendrier.html","Calendrier et rapports","Réunions à venir et passées, comptes rendus et rapports d’activité.","calendrier"],
+["espaces.html","Plan des espaces","Simulateur d’implantation : tester l’aménagement et vérifier les contraintes.","espaces"],
+["gouvernance.html","Gouvernance et projets","Qui décide, qui finance, qui travaille avec qui.","gouvernance"],
+["finances.html","Prévisionnel financier","Accès sur invitation.","finances"]];
+document.getElementById("cards").innerHTML=C.map(c=>'<a class="card" href="'+c[0]+'"><h3>'+c[1]+'</h3><div class="small">'+c[2]+'</div>'+(S.majs[c[3]]?'<p class="small">Mis à jour le '+L(S.majs[c[3]])+'</p>':'')+'</a>').join("");
+</script></body></html>

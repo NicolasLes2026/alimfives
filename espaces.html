@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulateur d’implantation</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#EDF0F3;--card:#F8F9FB;--tx:#16212E;--mu:#5B6877;--bd:#CBD3DC;--ac:#3B4BA8;--bad:#C0392B;--grid:#DDE3E9;--wall:#16212E;--ok:#2A9566}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12171E;--card:#1A212A;--tx:#E8EDF2;--mu:#9AA7B5;--bd:#2C3744;--ac:#8E9BFF;--bad:#EF6B5B;--grid:#232C37;--wall:#E8EDF2;--ok:#5CCB98}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#12171E;--card:#1A212A;--tx:#E8EDF2;--mu:#9AA7B5;--bd:#2C3744;--ac:#8E9BFF;--bad:#EF6B5B;--grid:#232C37;--wall:#E8EDF2;--ok:#5CCB98}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 "Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:14px 16px 6px}h1{font-size:18px;margin:0}header p{margin:2px 0 0;color:var(--mu);font-size:13px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:12px;padding:8px 16px 20px;align-items:start}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.card h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin:0 0 8px}
+svg{width:100%;height:auto;max-height:82vh;display:block;touch-action:none;user-select:none}
+.it{cursor:grab}.it text{pointer-events:none;fill:var(--tx);font-family:system-ui,sans-serif}
+label{display:block;font-size:12px;color:var(--mu);margin-bottom:6px}
+input[type=text],input[type=number]{width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;gap:8px}.row>*{flex:1}
+button{padding:7px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit;cursor:pointer}
+button:hover{border-color:var(--ac)}button.bad{color:var(--bad)}
+.chk{display:flex;gap:6px;align-items:center;color:var(--tx)}
+.side{display:flex;flex-direction:column;gap:12px}
+.bar{height:8px;background:var(--grid);border-radius:4px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:var(--ac)}
+.msg{color:var(--bad);margin:3px 0}.okm{color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}td{padding:2px 0}td:last-child{text-align:right}
+.mu{color:var(--mu)}
+body:not(.edit) .edit-only{display:none}
+</style></head><body>
+<script src="nav.js"></script>
+<header><h1>Simulateur d’implantation 2D</h1>
+<p>Glissez les espaces (pas de 25 cm). Les conflits apparaissent en rouge. Plan reconstitué d’après votre croquis : dimensions à ajuster. Vos essais ne sont pas enregistrés.</p><p id="upd" class="mu" style="font-size:13px"></p></header>
+<main>
+<div class="card"><svg id="sv"></svg></div>
+<div class="side">
+<div class="card"><h2>Bilan</h2><div id="st"></div></div>
+<div class="card"><h2>Contraintes</h2><div id="cf"></div></div>
+<div class="card"><h2>Élément sélectionné</h2><div id="ed"></div></div>
+<div class="card"><h2>Ajouter / paramètres</h2>
+<div class="row"><button id="a1">+ Espace</button><button id="a2">+ Zone interdite</button></div>
+<div class="row" style="margin-top:8px"><button id="a3">+ Dégagement issue</button><button id="a4">Revenir au plan validé</button></div>
+<div class="row" style="margin-top:10px"><label>Bâtiment larg. (m)<input type="number" id="bw" step=".5" min="3"></label><label>long. (m)<input type="number" id="bh" step=".5" min="3"></label></div>
+<label>Distance max cuisson → extraction (m)<input type="number" id="md" step=".5" min="1"></label>
+</div>
+<div class="card edit-only"><h2>Publier</h2><p class="mu" style="margin:0 0 8px">Copiez ce bloc dans espaces.html, à la place du bloc entre DEBUT-DONNEES et FIN-DONNEES.</p><button id="ex">Afficher le bloc à publier</button><textarea id="jx" style="width:100%;height:90px;margin-top:8px;font-size:11px"></textarea></div></div></main>
+<script>
+const $=s=>document.querySelector(s),svg=$('#sv'),G=.25,EPS=1e-6;
+let B,maxD,sel=null,nid=1,items;
+const EDIT=location.hash==="#edition";
+/* DEBUT-DONNEES */
+const PLAN={updated:"2026-11-20",B:{w:12,h:16},maxD:5,items:[
+{n:"Production artisanale",t:"b",x:0,y:0,w:3.5,h:4.5,c:30},
+{n:"Escalier",t:"b",x:0,y:4.5,w:3.5,h:1.5,c:0,f:1},
+{n:"Bar 1 · restauration et épicerie",t:"b",x:0,y:6,w:3.5,h:7,c:20},
+{n:"Atelier cuisine",t:"b",x:8,y:0,w:4,h:3.5,c:10,cook:1},
+{n:"Zone privatisation",t:"b",x:8,y:3.5,w:4,h:3,c:280},
+{n:"Bar 2",t:"b",x:8,y:6.5,w:1.5,h:1.5,c:20},
+{n:"Comptoir n°2",t:"b",x:9.5,y:6.5,w:2.5,h:2.5,c:45},
+{n:"Enfants",t:"b",x:10.5,y:12.5,w:1.5,h:3,c:330},
+{n:"Scène / espace café couvert (35 m²)",t:"b",s:"c",x:3.66,y:8.26,w:6.68,h:6.68,c:200},
+{n:"Issue · portes vitrées",t:"e",x:3.5,y:0,w:4.5,h:1.5},
+{n:"Issue · portes vitrées",t:"e",x:10.5,y:9,w:1.5,h:2},
+{n:"Extraction (gaine)",t:"g",x:11,y:1.2,w:0,h:0}]};
+/* FIN-DONNEES */
+function init(){const P=JSON.parse(JSON.stringify(PLAN));B=P.B;maxD=P.maxD;sel=null;nid=1;items=P.items;
+items.forEach(i=>i.id=nid++);$('#bw').value=B.w;$('#bh').value=B.h;$('#md').value=maxD;}
+const area=i=>i.s=="c"?Math.PI*i.w*i.w/4:i.w*i.h;
+function ov(a,b){const ca=a.s=="c",cb=b.s=="c";
+if(ca&&cb)return Math.hypot(a.x+a.w/2-b.x-b.w/2,a.y+a.w/2-b.y-b.w/2)<(a.w+b.w)/2-EPS;
+if(ca||cb){const c=ca?a:b,r=ca?b:a,R=c.w/2,cx=c.x+R,cy=c.y+R,px=Math.max(r.x,Math.min(cx,r.x+r.w)),py=Math.max(r.y,Math.min(cy,r.y+r.h));return Math.hypot(cx-px,cy-py)<R-EPS}
+return a.x<b.x+b.w-EPS&&b.x<a.x+a.w-EPS&&a.y<b.y+b.h-EPS&&b.y<a.y+a.h-EPS}
+function conflicts(){const m=[],bad=new Set(),bl=items.filter(i=>i.t=="b"),g=items.find(i=>i.t=="g");
+const add=(t,...ids)=>{m.push(t);ids.forEach(i=>bad.add(i))};
+bl.forEach((a,k)=>{
+if(a.x<-EPS||a.y<-EPS||a.x+a.w>B.w+EPS||a.y+a.h>B.h+EPS)add(`« ${a.n} » dépasse du bâtiment`,a.id);
+bl.slice(k+1).forEach(b=>{if(ov(a,b))add(`« ${a.n} » chevauche « ${b.n} »`,a.id,b.id)});
+items.filter(i=>i.t=="x"||i.t=="e").forEach(z=>{if(ov(a,z))add(z.t=="e"?`« ${a.n} » bloque un dégagement d’issue`:`« ${a.n} » empiète sur « ${z.n} »`,a.id,z.id)});
+if(a.cook){if(!g)add(`« ${a.n} » : aucune extraction définie`,a.id);else{const px=Math.max(a.x,Math.min(g.x,a.x+a.w)),py=Math.max(a.y,Math.min(g.y,a.y+a.h)),d=Math.hypot(g.x-px,g.y-py);if(d>maxD+EPS)add(`« ${a.n} » est à ${d.toFixed(1)} m de l’extraction (max ${maxD} m)`,a.id,g.id)}}});
+return{m,bad}}
+function wrap(s,n){const w=s.split(" "),l=[];let c="";w.forEach(x=>{if((c+" "+x).trim().length>n&&c){l.push(c);c=x}else c=(c+" "+x).trim()});if(c)l.push(c);return l}
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function draw(){const{m,bad}=conflicts();let h="";
+svg.setAttribute("viewBox",`-1 -1 ${B.w+2} ${B.h+2}`);
+for(let i=0;i<=B.w;i++)h+=`<line x1="${i}" y1="0" x2="${i}" y2="${B.h}" stroke="var(--grid)" stroke-width=".03"/>`;
+for(let j=0;j<=B.h;j++)h+=`<line x1="0" y1="${j}" x2="${B.w}" y2="${j}" stroke="var(--grid)" stroke-width=".03"/>`;
+h+=`<rect x="0" y="0" width="${B.w}" height="${B.h}" fill="none" stroke="var(--wall)" stroke-width=".14"/>`;
+const ord={x:0,e:1,b:2,g:3};
+[...items].sort((a,b)=>ord[a.t]-ord[b.t]).forEach(i=>{const s=i.id==sel,b=bad.has(i.id);let o="";
+if(i.t=="g"){o=`<circle cx="${i.x}" cy="${i.y}" r="${maxD}" fill="none" stroke="var(--ac)" stroke-width=".05" stroke-dasharray=".25 .2"/><circle cx="${i.x}" cy="${i.y}" r=".35" fill="${b?"var(--bad)":"var(--ac)"}"/><text x="${i.x}" y="${i.y-.55}" font-size=".38" text-anchor="middle">Extraction</text>`;
+}else{const cx=i.x+i.w/2,cy=i.y+i.h/2,fill=i.t=="x"?"rgba(192,57,43,.28)":i.t=="e"?"rgba(46,139,87,.25)":`hsl(${i.c} 55% 62% / .6)`,
+stroke=b?"var(--bad)":s?"var(--ac)":i.t=="x"?"var(--bad)":i.t=="e"?"var(--ok)":"var(--wall)",
+sw=b||s?.1:.05,dash=i.t!="b"?'stroke-dasharray=".25 .15"':"";
+o=i.s=="c"?`<circle cx="${cx}" cy="${cy}" r="${i.w/2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`:`<rect x="${i.x}" y="${i.y}" width="${i.w}" height="${i.h}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" ${dash}/>`;
+const fs=.36,lines=wrap(i.n,Math.max(5,Math.floor(i.w/.2)));if(i.t=="b")lines.push(area(i).toFixed(1).replace(".",",")+" m²");
+const y0=cy-(lines.length-1)*fs*.6;
+o+=lines.map((l,k)=>`<text x="${cx}" y="${y0+k*fs*1.2}" font-size="${fs}" text-anchor="middle" ${k==lines.length-1&&i.t=="b"?'font-weight="600"':''}>${esc(l)}</text>`).join("")}
+h+=`<g class="it" data-id="${i.id}">${o}</g>`});
+svg.innerHTML=h;
+const bl=items.filter(i=>i.t=="b"),used=bl.reduce((a,i)=>a+area(i),0),tot=B.w*B.h,fr=s=>s.toFixed(1).replace(".",",");
+$("#st").innerHTML=`<table><tr><td>Surface du bâtiment</td><td>${fr(tot)} m²</td></tr><tr><td>Surface affectée</td><td>${fr(used)} m²</td></tr><tr><td>Reste (circulation, libre)</td><td><b>${fr(tot-used)} m²</b></td></tr></table><div class="bar"><i style="width:${Math.min(100,used/tot*100)}%"></i></div><div class="mu">${Math.round(used/tot*100)} % occupé</div><table style="margin-top:8px">${bl.map(i=>`<tr><td>${esc(i.n)}</td><td>${fr(area(i))} m²</td></tr>`).join("")}</table>`;
+$("#cf").innerHTML=m.length?m.map(x=>`<div class="msg">⚠ ${esc(x)}</div>`).join(""):`<div class="okm">✓ Aucune contrainte violée</div>`}
+function editor(){const it=items.find(i=>i.id==sel),el=$("#ed");
+if(!it){el.innerHTML=`<p class="mu" style="margin:0">Cliquez sur un élément pour le modifier.</p>`;return}
+el.innerHTML=`<label>Nom<input type="text" id="en" value="${esc(it.n)}"></label>`+(it.t=="g"?"":`<div class="row"><label>${it.s=="c"?"Diamètre (m)":"Largeur (m)"}<input type="number" id="ew" step=".1" min=".5" value="${it.w}"></label>${it.s=="c"?"":`<label>Longueur (m)<input type="number" id="eh" step=".1" min=".5" value="${it.h}"></label>`}</div>`)+(it.t=="b"?`<label class="chk"><input type="checkbox" id="ec" ${it.cook?"checked":""}> Cuisson (exige l’extraction)</label>`:"")+`<div class="row">${it.t!="g"&&it.s!="c"?'<button id="rot">Pivoter</button>':""}<button id="del" class="bad">Supprimer</button></div>`;
+$("#en").oninput=e=>{it.n=e.target.value;draw()};
+if($("#ew"))$("#ew").oninput=e=>{it.w=Math.max(.5,+e.target.value||.5);if(it.s=="c")it.h=it.w;draw()};
+if($("#eh"))$("#eh").oninput=e=>{it.h=Math.max(.5,+e.target.value||.5);draw()};
+if($("#ec"))$("#ec").onchange=e=>{it.cook=e.target.checked;draw()};
+if($("#rot"))$("#rot").onclick=()=>{[it.w,it.h]=[it.h,it.w];editor();draw()};
+$("#del").onclick=()=>{items=items.filter(i=>i!=it);sel=null;editor();draw()}}
+let drag=null;
+function pt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+svg.addEventListener("pointerdown",e=>{const g=e.target.closest(".it");if(!g){sel=null;editor();draw();return}
+const it=items.find(i=>i.id==g.dataset.id),p=pt(e);drag={it,dx:p.x-it.x,dy:p.y-it.y};svg.setPointerCapture(e.pointerId);
+if(sel!=it.id){sel=it.id;editor()}draw()});
+svg.addEventListener("pointermove",e=>{if(!drag)return;const p=pt(e);drag.it.x=Math.round((p.x-drag.dx)/G)*G;drag.it.y=Math.round((p.y-drag.dy)/G)*G;draw()});
+addEventListener("pointerup",()=>drag=null);
+function addI(o){o.id=nid++;items.push(o);sel=o.id;editor();draw()}
+$("#a1").onclick=()=>addI({n:"Nouvel espace",t:"b",x:4,y:6,w:2,h:2,c:Math.floor(Math.random()*360)});
+$("#a2").onclick=()=>addI({n:"Zone interdite",t:"x",x:4,y:6,w:1.5,h:1.5});
+$("#a3").onclick=()=>addI({n:"Issue de secours",t:"e",x:4,y:6,w:2,h:1.5});
+$("#a4").onclick=()=>{init();editor();draw()};
+$("#bw").oninput=e=>{B.w=Math.max(3,+e.target.value||3);draw()};
+$("#bh").oninput=e=>{B.h=Math.max(3,+e.target.value||3);draw()};
+$("#md").oninput=e=>{maxD=Math.max(1,+e.target.value||1);draw()};
+$("#ex").onclick=()=>{const o={updated:new Date().toISOString().slice(0,10),B,maxD,items:items.map(({id,...r})=>r)};const t="/* DEBUT-DONNEES */\nconst PLAN="+JSON.stringify(o)+";\n/* FIN-DONNEES */";$("#jx").value=t;$("#jx").select();try{navigator.clipboard.writeText(t)}catch(e){}};
+document.body.classList.toggle("edit",EDIT);
+$("#upd").textContent=PLAN.updated?"Plan validé le "+new Date(PLAN.updated+"T12:00:00").toLocaleDateString("fr-FR",{dateStyle:"long"}):"";
+addEventListener("hashchange",()=>location.reload());
+init();editor();draw();
+</script></body></html>
