@@ -7,5 +7,5 @@ window.SITE={
   lienFinances:"",
   /* Réunions : exemples fictifs à remplacer. Les fichiers PDF se déposent dans le dossier rapports/ */
   reunions:[{"date":"2026-11-20","titre":"CR Réunion Soreli","lieu":"Lille","odj":"Bail et calendrier","docs":[{"t":"Compte rendu","u":"rapports/CR Compte rendu Soreli.pdf"}]},
-  {"date":"2026-12-01","titre":"Bilan","lieu":"Lille Fives","odj":"Prépa Fidess\nPartenaires\nPlan d'action"},   ]
+  {"date":"2026-12-01","titre":"Bilan","lieu":"Lille Fives","odj":"Prépa Fidess\nPartenaires\nPlan d'action"}, {"date":"2026-11-13","titre":"Bilan rencontre CCAS et Julie Nicolas ( Elue Alimentation Ville de Lille)","lieu":"Mairie Lille","odj":"","docs":[{"t":"Compte rendu","u":"rapports/RV CCAS et élue Alimentation"}]},  ]
 };
